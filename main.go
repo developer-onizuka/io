@@ -42,7 +42,7 @@ func write() {
 	//stdin  := os.Stdin
 	stdout := os.Stdout
 	//stderr := os.Stderr
-	n, _ = stdout.Write([]byte("Writing finished successfully.\n"))
+	_, _ = stdout.Write([]byte("Writing finished successfully.\n"))
 }
 
 func read() {
@@ -52,19 +52,24 @@ func read() {
 	}
 	defer g.Close()
 
-	z := make([]byte, 128)
-	m, _ := g.Read(z)
-	fmt.Printf("message in file: %v\n", z)
-	u := string(z)
-	fmt.Printf("message: %v\n", u)
-	fmt.Printf("m:%v\n", m)
-	fmt.Printf("z[0:%v]: %v\n",m , z[0:m])
-	fmt.Printf("u[0:%v]: %v\n",m , u[0:m])
+	for {
+		z := make([]byte, 8)
+		m, err := g.Read(z)
+		u := string(z)
+		if err == io.EOF {
+			break
+		}
+		fmt.Printf("---\nmessage in file: %v\n", z)
+		fmt.Printf("message: %v\n", u)
+		fmt.Printf("m:%v\n", m)
+		fmt.Printf("z[:%v]: %v\n",m , z[:m])
+		fmt.Printf("u[:%v]: %v\n",m , u[:m])
+	}
 
 	//stdin  := os.Stdin
 	stdout := os.Stdout
 	//stderr := os.Stderr
-	m, _ = stdout.Write([]byte("Reading finished successfully.\n"))
+	_, _ = stdout.Write([]byte("Reading finished successfully.\n"))
 }
 
 func copy() {
