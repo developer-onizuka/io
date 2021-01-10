@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"bufio"
 )
 
 func main() {
@@ -14,6 +15,8 @@ func main() {
 		write()
 	case "read":
 		read()
+	case "newread":
+		newread()
 	case "copy":
 		copy()
 	case "net":
@@ -55,6 +58,34 @@ func read() {
 	for {
 		z := make([]byte, 8)
 		m, err := g.Read(z)
+		u := string(z)
+		if err == io.EOF {
+			break
+		}
+		fmt.Printf("---\nmessage in file: %v\n", z)
+		fmt.Printf("message: %v\n", u)
+		fmt.Printf("m:%v\n", m)
+		fmt.Printf("z[:%v]: %v\n",m , z[:m])
+		fmt.Printf("u[:%v]: %v\n",m , u[:m])
+	}
+
+	//stdin  := os.Stdin
+	stdout := os.Stdout
+	//stderr := os.Stderr
+	_, _ = stdout.Write([]byte("Reading finished successfully.\n"))
+}
+
+func newread() {
+	g, err := os.Open(os.Args[2])
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer g.Close()
+
+	newg := bufio.NewReader(g)
+	for {
+		z := make([]byte, 8)
+		m, err := newg.Read(z)
 		u := string(z)
 		if err == io.EOF {
 			break
