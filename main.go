@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"bufio"
+	"syscall"
 )
 
 func main() {
@@ -15,6 +16,8 @@ func main() {
 		write()
 	case "read":
 		read()
+	case "sysread":
+		sysread()
 	case "newread":
 		newread()
 	case "copy":
@@ -73,6 +76,37 @@ func read() {
 	stdout := os.Stdout
 	//stderr := os.Stderr
 	_, _ = stdout.Write([]byte("Reading finished successfully.\n"))
+}
+
+func sysread() {
+	g, err := syscall.Open(os.Args[2], syscall.O_RDWR, 0) 
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer syscall.Close(g)
+
+	for {
+		z := make([]byte, 8)
+		m, err := syscall.Read(g, z)
+		u := string(z)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if m == 0 {
+			break
+		}
+		fmt.Printf("---\nmessage in file: %v\n", z)
+		fmt.Printf("message: %v\n", u)
+		fmt.Printf("m:%v\n", m)
+		fmt.Printf("z[:%v]: %v\n",m , z[:m])
+		fmt.Printf("u[:%v]: %v\n",m , u[:m])
+	}
+
+	//stdin  := os.Stdin
+	//stdout := os.Stdout
+	//stderr := os.Stderr
+	_, _ = syscall.Write(syscall.Stdout, []byte("Reading finished successfully.\n"))
+	//https://xn--go-hh0g6u.com/pkg/syscall/
 }
 
 func newread() {
